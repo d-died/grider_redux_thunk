@@ -15,13 +15,25 @@ export const fetchPosts = () => {
 
         // we don't need to return an action since this is using redux-thunk. 
         // instead, we invoke dispatch
+        // so what once was just:
         // return {
         //     type: 'FETCH_POSTS',
         //     payload: response
         // }
-
-        dispatch({ type: 'FETCH_POSTS', payload: response })
+        // is now (with added . method to grab only the data rather than the whole response): 
+        dispatch({ type: 'FETCH_POSTS', payload: response.data })
     }
     }
 
+// cleaner way to write everything above:
+// export const fetchPosts = () => async dispatch => {
+//     const response = await jsonPlaceholder.get('/posts')
+//     dispatch({ type: 'FETCH_POSTS', payload: response.data })
+// }
+
+export const fetchUser = (id) => async dispatch => {
+    const response = await jsonPlaceholder.get(`/users/${id}`)
+     
+    dispatch({ type: 'FETCH_USER', payload: response.data})
+}
    
