@@ -1,4 +1,24 @@
+import _ from 'lodash'
 import jsonPlaceholder from "../apis/jsonPlaceholder"
+
+
+//AS A GENERAL NOTE, YOU WANT ACTION CREATORS TO BE AS SHORT & COMPACT AS POSSIBLE
+
+
+export const fetchPostsAndUsers = () => async (dispatch, getState) => {
+    await dispatch(fetchPosts()) // manually dispatching this function, brings that action creator
+    // redux thunk and get invoked with dispatch
+    
+    //these are big helps from lodash, and this is refactored below
+    // const userIDs = _.uniq(_.map(getState().posts, 'userId'))
+    // userIDs.forEach(id => dispatch(fetchUser(id)))
+
+    _.chain(getState().posts)
+        .map('userId')
+        .uniq()
+        .forEach(id => dispatch(fetchUser(id)))
+        .value() // this starts the lodash chain, sort of like an execute command
+}
 
 export const fetchPosts = () => {
 
@@ -31,9 +51,24 @@ export const fetchPosts = () => {
 //     dispatch({ type: 'FETCH_POSTS', payload: response.data })
 // }
 
-export const fetchUser = (id) => async dispatch => {
-    const response = await jsonPlaceholder.get(`/users/${id}`)
+// export const fetchUser = (id) => async dispatch => {
+//   _fetchUser(id, dispatch)
+// }
+
+// //lodash memoize makes it such that there is only ONE api request per user, rather than one per post
+// // i think it kinda stores stuff in it like a temporary package
+// // this would prevent you from refetching any user data after the first time
+//     // the solution to that would be to create another function similar to below but without memoize stuff
+// const _fetchUser = _.memoize(async (id, dispatch) => {
+//       // fetchUser creates a branch new function EVERY SINGLE TIME it's called
+//       const response = await jsonPlaceholder.get(`/users/${id}`)
      
+//       dispatch({ type: 'FETCH_USER', payload: response.data})
+// })
+
+// this is a refactor of the stuff above, but still making 100 calls for 100 posts
+export const fetchUser = id => async dispatch => {
+    const response = await jsonPlaceholder.get(`/users/${id}`)
+   
     dispatch({ type: 'FETCH_USER', payload: response.data})
 }
-   

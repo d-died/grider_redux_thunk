@@ -1,6 +1,6 @@
 import React from "react";
 import { connect } from 'react-redux'
-import { fetchUser } from '../actions'
+// import { fetchUser } from '../actions'
 
 
 class UserHeader extends React.Component {
@@ -9,14 +9,18 @@ class UserHeader extends React.Component {
     // the lil bb component isn't suited for such a heavy load. SO ... we refactored. 
     // (everything that was eliminated in the refactor is commented out)
 
-    componentDidMount() {
-        this.props.fetchUser(this.props.userId)
-    }
+    // we took this out after we combined the 2 action creators
+    // componentDidMount() {
+    //     this.props.fetchUser(this.props.userId)
+    // }
 
     
 
     render() {
-        const user = this.props.users.find(user =>  user.id === this.props.userId)
+        // const user = this.props.users.find(user =>  user.id === this.props.userId)
+        // we translated the line above into the find in mapStateToProps
+
+        const { user } = this.props
 
         if (!user) {
             return null
@@ -29,9 +33,9 @@ class UserHeader extends React.Component {
     }
 
 }
-
-const mapStateToProps = (state) => {
-    return { users: state.users }
+// ownProps are the props that are ABOUT to go into the component
+const mapStateToProps = (state, ownProps) => {
+    return { users: state.users.find(user => user.id === ownProps.userId ) }
 }
 
-export default connect(mapStateToProps, { fetchUser })(UserHeader)
+export default connect(mapStateToProps)(UserHeader)
